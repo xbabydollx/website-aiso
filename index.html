@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISO | Creative Agency</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@200;300;400;600&family=Noto+Serif+JP:wght@200;300;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================================================
+            RESET & SYSTEM VARIABLE 
+            ========================================================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --text-muted: #d5bd9c; 
+            --gold: #cca43b;
+            --red: #e02424; 
+            --font-heading: 'Cinzel', serif;
+            --font-body: 'Montserrat', sans-serif;
+            --font-kanji: 'Noto Serif JP', serif;
+            
+            --premium-bezier: cubic-bezier(0.22, 1, 0.36, 1);
+            --text-bezier: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-body);
+            overflow: hidden; 
+            height: 100vh;
+            width: 100vw;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .mobile-header { display: none; }
+
+        /* ==========================================================================
+            PREMIUM BACKGROUND BEAUTIFICATION
+            ========================================================================== */
+        .global-grid-bg {
+            position: fixed;
+            top: 0;
+            left: 320px;
+            width: calc(100vw - 320px);
+            height: 100vh;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 12%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .grid-line {
+            width: 1px;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.04) 50%, rgba(255, 255, 255, 0));
+        }
+
+        /* ==========================================================================
+            SPLIT SCREEN Framework (DESKTOP VERSION)
+            ========================================================================== */
+        .split-layout-container {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            z-index: 2;
+        }
+
+        .left-sidebar {
+            flex: 0 0 320px;
+            height: 100vh;
+            background-color: #121212;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .circle-controller-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .interactive-outer-circle {
+            width: 210px;
+            height: 210px;
+            border: 1px dashed rgba(204, 164, 59, 0.3);
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            will-change: transform;
+            transition: transform 1.6s cubic-bezier(0.85, 0, 0.15, 1);
+        }
+
+        .interactive-outer-circle::before {
+            content: '';
+            width: 175px;
+            height: 175px;
+            border: 1px solid rgba(204, 164, 59, 0.45);
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .indicator-line {
+            position: absolute;
+            width: 1px;
+            height: 175px;
+            background: linear-gradient(to bottom, var(--red), transparent 50%, var(--gold));
+        }
+
+        .nav-dot {
+            position: absolute; 
+            width: 34px;
+            height: 34px;
+            background-color: #121212;
+            border: 1px solid var(--gold);
+            border-radius: 50%;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.4s cubic-bezier(0.85, 0, 0.15, 1), border-color 0.4s, transform 0.4s;
+        }
+
+        .kanji-num {
+            font-family: var(--font-kanji);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            will-change: transform;
+            transition: transform 1.6s cubic-bezier(0.85, 0, 0.15, 1), color 0.4s;
+            display: inline-block;
+        }
+
+        .nav-dot:hover .kanji-num, .nav-dot.active .kanji-num {
+            color: #ffffff;
+        }
+
+        .nav-dot:hover, .nav-dot.active {
+            background-color: var(--red);
+            border-color: var(--red);
+            transform: scale(1.08);
+            box-shadow: 0 0 15px rgba(224, 36, 36, 0.4);
+        }
+
+        .click-instruction {
+            margin-top: 40px;
+            font-size: 0.55rem;
+            letter-spacing: 4px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .right-content-window {
+            flex: 1;
+            height: 100vh;
+            overflow: hidden; 
+            position: relative;
+            background: var(--bg-color); 
+        }
+
+        .vertical-slider-track {
+            display: flex;
+            flex-direction: column;
+            height: 700vh; 
+            will-change: transform;
+            transition: transform 1.6s cubic-bezier(0.85, 0, 0.15, 1);
+        }
+
+        .page-section {
+            height: 100vh;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 10%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ==========================================================================
+            BACKGROUND HERO SECTION (#p1)
+            ========================================================================== */
+        #p1 {
+            background-image: linear-gradient(rgba(26, 26, 26, 0.2), rgba(26, 26, 26, 0.2)), url('pictures/background hero.png');
+            background-size: cover;          
+            background-position: center top; 
+            background-repeat: no-repeat;
+            margin: 0;
+            padding-top: 0;
+        }
+
+        #p2, #p3, #p4, #p5, #p6, #p7 {
+            background: radial-gradient(circle at 75% 25%, #3a3a3a 0%, var(--bg-color) 70%);
+        }
+
+        .inner-content {
+            width: 100%;
+            max-width: 1100px;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* ==========================================================================
+            DRAMATIC TEXT REVEAL ENGINE
+            ========================================================================== */
+        .content-fade {
+            opacity: 0;
+            transform: translateY(50px) scale(0.98);
+            clip-path: inset(0 0 100% 0);
+            will-change: opacity, transform, clip-path;
+            transition: opacity 1.4s var(--text-bezier), 
+                        transform 1.4s var(--text-bezier), 
+                        clip-path 1.4s var(--text-bezier);
+        }
+
+        .page-section.active .content-fade {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            clip-path: inset(0 0 0% 0);
+        }
+
+        .page-section .content-fade:nth-child(1) { transition-delay: 0.1s; }
+        .page-section .content-fade:nth-child(2) { transition-delay: 0.25s; }
+        .page-section .content-fade:nth-child(3) { transition-delay: 0.4s; }
+        .page-section .content-fade:nth-child(4) { transition-delay: 0.55s; }
+        .page-section .content-fade:nth-child(5) { transition-delay: 0.7s; }
+
+        .manifesto-grid > *, .expertise-row-grid > *, .horizontal-process-flow > *, .about-grid > *, .works-detail-grid > * {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1.2s var(--text-bezier), transform 1.2s var(--text-bezier);
+            will-change: opacity, transform;
+        }
+
+        .page-section.active .manifesto-grid > *, 
+        .page-section.active .expertise-row-grid > *, 
+        .page-section.active .horizontal-process-flow > *, 
+        .page-section.active .about-grid > *,
+        .page-section.active .works-detail-grid > * {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .page-section.active .manifesto-grid > *:nth-child(1) { transition-delay: 0.3s; }
+        .page-section.active .manifesto-grid > *:nth-child(2) { transition-delay: 0.5s; }
+
+        .page-section.active .expertise-row-grid > *:nth-child(1) { transition-delay: 0.2s; }
+        .page-section.active .expertise-row-grid > *:nth-child(2) { transition-delay: 0.3s; }
+        .page-section.active .expertise-row-grid > *:nth-child(3) { transition-delay: 0.4s; }
+        .page-section.active .expertise-row-grid > *:nth-child(4) { transition-delay: 0.5s; }
+        .page-section.active .expertise-row-grid > *:nth-child(5) { transition-delay: 0.6s; }
+        .page-section.active .expertise-row-grid > *:nth-child(6) { transition-delay: 0.7s; }
+
+        .page-section.active .horizontal-process-flow > *:nth-child(1) { transition-delay: 0.2s; }
+        .page-section.active .horizontal-process-flow > *:nth-child(2) { transition-delay: 0.35s; }
+        .page-section.active .horizontal-process-flow > *:nth-child(3) { transition-delay: 0.5s; }
+        .page-section.active .horizontal-process-flow > *:nth-child(4) { transition-delay: 0.65s; }
+        .page-section.active .horizontal-process-flow > *:nth-child(5) { transition-delay: 0.8s; }
+
+        .page-section.active .works-detail-grid > *:nth-child(1) { transition-delay: 0.3s; }
+        .page-section.active .works-detail-grid > *:nth-child(2) { transition-delay: 0.5s; }
+
+        /* ==========================================================================
+            TYPOGRAPHY & TAGS
+            ========================================================================== */
+        .page-number { font-size: 0.75rem; letter-spacing: 5px; color: var(--text-muted); display: block; margin-bottom: 25px; }
+        .center-text { text-align: center; justify-content: center; display: flex; flex-direction: column; align-items: center; }
+        .logo-text { font-family: var(--font-heading); font-size: 6.5rem; letter-spacing: 25px; margin-right: -25px; color: var(--gold); }
+        .subtitle { font-size: 1.15rem; letter-spacing: 14px; margin-right: -14px; color: #fff; margin-bottom: 20px; font-weight: 300; }
+        .gold-divider { width: 50px; height: 1px; background: var(--gold); margin: 25px auto; opacity: 0.3; }
+        .tagline { font-size: 0.65rem; letter-spacing: 4px; color: var(--text-muted); line-height: 2.2; }
+        .red-text { color: var(--red); }
+        .gold-text { color: var(--gold); }
+
+        .small-red-tag {
+            font-size: 0.65rem;
+            color: var(--red);
+            letter-spacing: 3px;
+            display: block;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .kanji-bg {
+            position: absolute;
+            font-family: var(--font-kanji);
+            font-size: 28rem;
+            color: rgba(255, 255, 255, 0.015);
+            user-select: none;
+            right: 5%;
+            top: -5%;
+            z-index: 1;
+            font-weight: 100;
+            pointer-events: none;
+            will-change: transform;
+            transition: opacity 2s var(--premium-bezier), transform 2s var(--premium-bezier) !important;
+        }
+        .page-section.active .kanji-bg {
+            transform: scale(1.05) translateY(-5px);
+        }
+
+        /* MANIFESTO LAYOUT */
+        .manifesto-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 65px; align-items: center; }
+        .manifesto-left h2 { font-size: 3.5rem; font-weight: 600; line-height: 1.15; letter-spacing: -1px; }
+        .manifesto-right { border-left: 1px solid rgba(255, 255, 255, 0.1); padding-left: 45px; }
+        .indonesian-text { font-size: 1.05rem; color: #eee; font-weight: 300; line-height: 1.8; }
+
+        /* EXPERTISE LAYOUT */
+        .section-main-title { font-size: 2.2rem; font-weight: 400; letter-spacing: 2px; line-height: 1.3; margin-bottom: 5px; }
+        .section-subtitle-tag { font-size: 0.8rem; letter-spacing: 4px; color: var(--text-muted); margin-bottom: 40px; }
+        
+        .expertise-row-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 20px;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .exp-col { text-align: left; }
+        .exp-icon { color: var(--gold); font-size: 1.2rem; margin-bottom: 15px; }
+        .exp-col h5 { font-size: 0.75rem; letter-spacing: 1px; margin-bottom: 10px; color: #fff; text-transform: uppercase; }
+        .exp-col p { font-size: 0.68rem; color: #ccc; line-height: 1.6; }
+
+        /* WORKS & SLIDER COMPONENT */
+        .works-detail-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 50px; align-items: center; }
+        .work-num { font-size: 2.5rem; font-family: var(--font-heading); color: rgba(255, 255, 255, 0.15); margin-bottom: 5px; }
+        .work-title { font-size: 3.2rem; letter-spacing: 4px; font-weight: 400; margin-bottom: 5px; color: #fff; }
+        .work-desc { font-size: 0.8rem; color: var(--text-muted); letter-spacing: 2px; margin-bottom: 25px; }
+        
+        /* Premium Image Slider */
+        .slider-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 4 / 3;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 4px;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .image-slide-track {
+            display: flex;
+            width: 500%;
+            height: 100%;
+            will-change: transform;
+            transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+        .slide-frame {
+            width: 20%;
+            height: 100%;
+            position: relative;
+        }
+        .slide-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Slider Controller Arrows */
+        .slider-arrow-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background: rgba(18, 18, 18, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        .slider-arrow-btn:hover {
+            background: var(--gold);
+            border-color: var(--gold);
+            color: #121212;
+        }
+        .arrow-prev { left: 10px; }
+        .arrow-next { right: 10px; }
+        
+        .view-case-btn { color: #fff; text-decoration: none; font-size: 0.75rem; letter-spacing: 2px; border-bottom: 1px solid rgba(255,255,255,0.4); padding-bottom: 5px; transition: all 0.3s; display: inline-block; }
+        .view-case-btn:hover { color: var(--gold); border-color: var(--gold); padding-left: 5px; }
+
+        /* PROCESS LAYOUT */
+        .block-title { font-size: 2.2rem; font-weight: 400; letter-spacing: 1px; margin-bottom: 50px; }
+        .horizontal-process-flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 25px; }
+        .flow-step .step-num { font-size: 2.8rem; font-family: var(--font-heading); color: rgba(255, 255, 255, 0.05); display: block; margin-bottom: -5px; }
+        .flow-step h5 { font-size: 0.9rem; color: var(--gold); margin-bottom: 12px; letter-spacing: 1px; text-transform: uppercase; }
+        .flow-step p { font-size: 0.75rem; color: #ddd; line-height: 1.7; }
+
+        /* ABOUT LAYOUT */
+        .about-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 60px; align-items: center; }
+        .about-left h3 { font-size: 2rem; font-weight: 400; line-height: 1.4; letter-spacing: 1px; }
+        .about-right p { font-size: 0.95rem; color: #ddd; line-height: 1.8; font-weight: 300; }
+
+        /* CONTACT LAYOUT */
+        .big-contact-text { font-size: 4.5rem; font-weight: 400; letter-spacing: 2px; line-height: 1.1; margin-bottom: 45px; }
+        .contact-links { font-size: 1.1rem; letter-spacing: 1px; }
+        .contact-links a { color: #fff; text-decoration: none; transition: color 0.3s; font-weight: 300; }
+        .contact-links a:hover { color: var(--gold); }
+        .contact-links .divider { color: rgba(255,255,255,0.3); margin: 0 20px; }
+
+        /* ==========================================================================
+            AUTOMATIC SWITCHING MOBILE LAYOUT
+            ========================================================================== */
+        @media (max-width: 992px) {
+            body { 
+                overflow-y: auto !important; 
+                height: auto !important; 
+                width: 100%;
+                padding-bottom: 70px;
+            }
+            
+            .global-grid-bg { display: none; }
+            
+            .mobile-header {
+                display: flex;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 65px;
+                background-color: rgba(26, 26, 26, 0.9);
+                backdrop-filter: blur(10px);
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                z-index: 1000;
+                align-items: center;
+                justify-content: center;
+            }
+            .mobile-logo { font-family: var(--font-heading); color: var(--gold); font-size: 1.5rem; letter-spacing: 6px; }
+
+            .split-layout-container { flex-direction: column; height: auto; }
+            
+            .left-sidebar { 
+                position: fixed; bottom: 0; left: 0; width: 100%; height: 65px;
+                background-color: rgba(18, 18, 18, 0.95); backdrop-filter: blur(15px);
+                border-right: none; border-top: 1px solid rgba(255, 255, 255, 0.1);
+                z-index: 1000; padding: 0; display: flex; align-items: center; justify-content: center;
+            }
+            
+            .interactive-outer-circle, .interactive-outer-circle::before, .indicator-line, .click-instruction {
+                display: none !important;
+            }
+            
+            .circle-controller-box { flex-direction: row; width: 100%; max-width: 480px; justify-content: space-around; padding: 0 10px; }
+            .nav-dot { position: static !important; width: 42px; height: 42px; background-color: transparent; border: 1px solid rgba(204, 164, 59, 0.3); border-radius: 8px; transform: none !important; box-shadow: none !important; transition: all 0.3s ease; }
+            .kanji-num { font-size: 1rem; color: var(--text-muted); transform: none !important; }
+            
+            .nav-dot.active { background-color: var(--red); border-color: var(--red); transform: translateY(-3px) !important; box-shadow: 0 4px 12px rgba(224, 36, 36, 0.3) !important; }
+            .nav-dot.active .kanji-num { color: #ffffff; }
+            
+            .right-content-window { height: auto; overflow: visible; background: var(--bg-color); }
+            .vertical-slider-track { height: auto; transform: none !important; }
+            
+            .page-section { 
+                height: auto; 
+                min-height: 90vh; 
+                padding: 110px 6% 70px 6%; 
+                border-bottom: 1px solid rgba(255, 255, 255, 0.08); 
+                background-image: linear-gradient(rgba(26, 26, 26, 0.75), rgba(26, 26, 26, 0.75)), url('pictures/BACKGROUND-HP.png');
+                background-size: cover;
+                background-position: center center;
+                background-repeat: no-repeat;
+            }
+
+            #p1 { background-image: linear-gradient(rgba(26, 26, 26, 0.3), rgba(26, 26, 26, 0.3)), url('pictures/background hero.png'); background-size: cover; background-position: center center; }
+            
+            .inner-content { max-width: 100%; }
+            
+            .content-fade { opacity: 1 !important; transform: none !important; clip-path: none !important; }
+            .manifesto-grid > *, .expertise-row-grid > *, .horizontal-process-flow > *, .about-grid > *, .works-detail-grid > * { opacity: 1 !important; transform: none !important; transition-delay: 0s !important; }
+            
+            .logo-text { font-size: 3.5rem; letter-spacing: 15px; margin-right: -15px; }
+            .subtitle { font-size: 0.9rem; letter-spacing: 8px; margin-bottom: 15px; }
+            .tagline { font-size: 0.6rem; letter-spacing: 2px; line-height: 2; }
+            
+            .manifesto-grid, .about-grid, .works-detail-grid { grid-template-columns: 1fr; gap: 30px; }
+            .manifesto-left h2 { font-size: 2rem; line-height: 1.3; }
+            .manifesto-right { border-left: none; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-left: 0; padding-top: 25px; }
+            
+            .expertise-row-grid { grid-template-columns: repeat(2, 1fr); gap: 25px; }
+            .horizontal-process-flow { grid-template-columns: 1fr; gap: 30px; }
+            
+            .work-title { font-size: 2.2rem; }
+            .about-left h3 { font-size: 1.5rem; line-height: 1.4; }
+            .big-contact-text { font-size: 2.5rem; }
+            
+            .contact-links { display: flex; flex-direction: column; gap: 15px; }
+            .contact-links .divider { display: none; }
+            
+            .kanji-bg { font-size: 11rem; right: 4%; bottom: 4%; top: auto; left: auto !important; opacity: 0.02 !important; font-weight: 100; transform: none !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="global-grid-bg">
+        <div class="grid-line"></div>
+        <div class="grid-line"></div>
+        <div class="grid-line"></div>
+    </div>
+
+    <header class="mobile-header">
+        <div class="mobile-logo">AISO</div>
+    </header>
+
+    <div class="split-layout-container">
+        
+        <div class="left-sidebar">
+            <div class="circle-controller-box">
+                <div class="interactive-outer-circle" id="rotateCircle">
+                    <div class="indicator-line"></div>
+                    
+                    <div class="nav-dot" onclick="jumpToPage(0)"><span class="kanji-num">一</span></div>
+                    <div class="nav-dot" onclick="jumpToPage(1)"><span class="kanji-num">二</span></div>
+                    <div class="nav-dot" onclick="jumpToPage(2)"><span class="kanji-num">三</span></div>
+                    <div class="nav-dot" onclick="jumpToPage(3)"><span class="kanji-num">四</span></div>
+                    <div class="nav-dot" onclick="jumpToPage(4)"><span class="kanji-num">五</span></div>
+                    <div class="nav-dot" onclick="jumpToPage(5)"><span class="kanji-num">六</span></div>
+                    <div class="nav-dot" onclick="jumpToPage(6)"><span class="kanji-num">七</span></div>
+                </div>
+                <div class="click-instruction">USE MOUSE WHEEL OR CLICK DOTS</div>
+            </div>
+        </div>
+
+        <div class="right-content-window">
+            <div class="vertical-slider-track" id="mainSliderTrack">
+                
+                <!-- 01 / HERO -->
+                <div class="page-section active" id="p1">
+                    <div class="kanji-bg">美学</div>
+                    <div class="inner-content center-text">
+                        <span class="page-number content-fade">01 / HERO</span>
+                        <h1 class="logo-text content-fade">AISO</h1>
+                        <p class="subtitle content-fade">CREATIVE AGENCY</p>
+                        <div class="gold-divider content-fade"></div>
+                        <p class="tagline content-fade">STRATEGY AT HEART. CREATIVE IN EXECUTION. IMPACT IN EVERY DETAIL.</p>
+                    </div>
+                </div>
+
+                <!-- 02 / MANIFESTO -->
+                <div class="page-section" id="p2">
+                    <div class="kanji-bg">戦略</div>
+                    <div class="inner-content">
+                        <span class="page-number content-fade">02 / MANIFESTO</span>
+                        <div class="manifesto-grid">
+                            <div class="manifesto-left">
+                                <span class="small-red-tag">WE DON'T JUST</span>
+                                <h2>CREATE DESIGNS.</h2>
+                                <span class="small-red-tag">WE BUILD</span>
+                                <h2 class="gold-text">PERCEPTION.</h2>
+                            </div>
+                            <div class="manifesto-right">
+                                <p class="indonesian-text">
+                                    Desain bukan sekadar visual yang indah. Kami menciptakan persepsi, menanamkan makna, dan membangun koneksi secara mendalam di setiap detail eksekusi.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 03 / EXPERTISE -->
+                <div class="page-section" id="p3">
+                    <div class="kanji-bg">創造</div>
+                    <div class="inner-content">
+                        <span class="page-number content-fade">03 / EXPERTISE</span>
+                        <span class="small-red-tag content-fade">WHAT WE DO</span>
+                        <h2 class="section-main-title content-fade">STRATEGY. CREATIVITY. TECHNOLOGY.</h2>
+                        <p class="section-subtitle-tag content-fade">ALL IN ONE SOLUTION.</p>
+                        
+                        <div class="expertise-row-grid">
+                            <div class="exp-col">
+                                <div class="exp-icon">✦</div>
+                                <h5>BRAND STRATEGY</h5>
+                                <p>Research, positioning, and strategy to build brands with strong foundation.</p>
+                            </div>
+                            <div class="exp-col">
+                                <div class="exp-icon">✦</div>
+                                <h5>BRAND IDENTITY</h5>
+                                <p>Visual identity design that creates meaning and builds strong recognition.</p>
+                            </div>
+                            <div class="exp-col">
+                                <div class="exp-icon">✦</div>
+                                <h5>WEB DEVELOPMENT</h5>
+                                <p>Modern, responsive and high-performance websites that elevate your brand.</p>
+                            </div>
+                            <div class="exp-col">
+                                <div class="exp-icon">✦</div>
+                                <h5>DIGITAL CAMPAIGN</h5>
+                                <p>Data-driven campaigns that connects brands to the right audience.</p>
+                            </div>
+                            <div class="exp-col">
+                                <div class="exp-icon">✦</div>
+                                <h5>VISUAL PRODUCTION</h5>
+                                <p>Photo, video, and motion design that tell your story to life.</p>
+                            </div>
+                            <div class="exp-col">
+                                <div class="exp-icon">✦</div>
+                                <h5>AI & AUTOMATION</h5>
+                                <p>Smart automation and AI solutions to accelerate your growth.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 04 / WORKS (ALILA SOLO) -->
+                <div class="page-section" id="p4">
+                    <div class="kanji-bg">無心</div>
+                    <div class="inner-content">
+                        <span class="page-number content-fade">04 / WORKS</span>
+                        
+                        <div class="works-detail-grid">
+                            <div>
+                                <span class="small-red-tag">SELECTED WORKS</span>
+                                <h2 class="work-num">01</h2>
+                                <h3 class="work-title">ALILA SOLO</h3>
+                                <p class="work-desc">LUXURY HOSPITALITY BRANDING</p>
+                                <p class="indonesian-text" style="font-size: 0.85rem; margin-bottom: 25px; max-width: 90%;">
+                                    Visual journal documenting Agra Rooftop branding. An elegant representation of signature beverage strategy, refined art direction, and sophisticated layout composition.
+                                </p>
+                                <a href="#" class="view-case-btn">VIEW CASESTUDY ➔</a>
+                            </div>
+                            
+                            <!-- Slider Box dengan Slide Track Effect Geser (Caption Hitam Dihapus) -->
+                            <div class="slider-wrapper">
+                                <div class="slider-arrow-btn arrow-prev" onclick="moveSlide(-1)">&#10094;</div>
+                                <div class="slider-arrow-btn arrow-next" onclick="moveSlide(1)">&#10095;</div>
+                                
+                                <div class="image-slide-track" id="imageTrack">
+                                    <div class="slide-frame">
+                                        <img src="pictures/ALILA-1.png" alt="Agra Rooftop Cover">
+                                    </div>
+                                    <div class="slide-frame">
+                                        <img src="pictures/ALILA-2.png" alt="Golden Serenity Presentation">
+                                    </div>
+                                    <div class="slide-frame">
+                                        <img src="pictures/ALILA-3.png" alt="Signature Beverage Concept">
+                                    </div>
+                                    <div class="slide-frame">
+                                        <img src="pictures/ALILA-4.png" alt="Thank You Vision">
+                                    </div>
+                                    <div class="slide-frame">
+                                        <img src="pictures/ALILA-5.png" alt="Branding Credits Framework">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 05 / PROCESS -->
+                <div class="page-section" id="p5">
+                    <div class="kanji-bg">調和</div>
+                    <div class="inner-content">
+                        <span class="page-number content-fade">05 / PROCESS</span>
+                        <span class="small-red-tag content-fade">OUR PROCESS</span>
+                        <h2 class="block-title content-fade">A CLEAR PATH TO IMPACT.</h2>
+                        
+                        <div class="horizontal-process-flow">
+                            <div class="flow-step">
+                                <span class="step-num">01</span>
+                                <h5>DISCOVER</h5>
+                                <p>Understanding your business, challenges, and opportunities.</p>
+                            </div>
+                            <div class="flow-step">
+                                <span class="step-num">02</span>
+                                <h5>RESEARCH</h5>
+                                <p>Deep research to find insights that matter.</p>
+                            </div>
+                            <div class="flow-step">
+                                <span class="step-num">03</span>
+                                <h5>CONCEPT</h5>
+                                <p>Crafting ideas and concepts that scale meaning and value.</p>
+                            </div>
+                            <div class="flow-step">
+                                <span class="step-num">04</span>
+                                <h5>EXECUTION</h5>
+                                <p>Bringing the concept to life with precision and excellence.</p>
+                            </div>
+                            <div class="flow-step">
+                                <span class="step-num">05</span>
+                                <h5>GROWTH</h5>
+                                <p>Measuring results and scaling for sustainable growth.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 06 / ABOUT US -->
+                <div class="page-section" id="p6">
+                    <div class="kanji-bg">美略</div>
+                    <div class="inner-content">
+                        <span class="page-number content-fade">06 / ABOUT US</span>
+                        <div class="about-grid">
+                            <div class="about-left">
+                                <span class="small-red-tag">WE BELIEVE IN</span>
+                                <h3>STRATEGY WITH PURPOSE.<br>DESIGN WITH MEANING.<br><span class="red-text">IMPACT THAT LASTS.</span></h3>
+                            </div>
+                            <div class="about-right">
+                                <p>AISO was founded to help brands become unforgettable through strategy, creativity, and technology. We don't follow passing trends, we create timeless solution.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 07 / CONTACT -->
+                <div class="page-section" id="p7">
+                    <div class="inner-content">
+                        <span class="page-number content-fade">07 / CONTACT</span>
+                        <span class="small-red-tag content-fade">LET'S BUILD</span>
+                        <h2 class="big-contact-text content-fade">SOMETHING<br>MEANINGFUL.</h2>
+                        <div class="contact-links content-fade">
+                            <a href="mailto:hello@aiso.co">hello@aiso.co</a>
+                            <span class="divider">|</span>
+                            <a href="#">WhatsApp</a>
+                            <span class="divider">|</span>
+                            <a href="#">Instagram</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const mainSliderTrack = document.getElementById('mainSliderTrack');
+        const rotateCircle = document.getElementById('rotateCircle');
+        const navDots = document.querySelectorAll('.nav-dot');
+        const sections = document.querySelectorAll('.page-section');
+
+        const angles = [0, 51.43, 102.86, 154.29, 205.71, 257.14, 308.57];
+        let activePageIndex = 0;
+        let isScrolling = false;
+        const totalPages = sections.length;
+
+        /* JS ENGINE UNTUK IMAGE SLIDER GESER AUTO/MANUAL */
+        let currentSlideIndex = 0;
+        const totalSlides = 5;
+        const imageTrack = document.getElementById('imageTrack');
+        let autoSlideTimer;
+
+        function updateSlidePosition() {
+            imageTrack.style.transform = `translateX(-${currentSlideIndex * 20}%)`;
+        }
+
+        function moveSlide(direction) {
+            clearInterval(autoSlideTimer); 
+            currentSlideIndex += direction;
+            
+            if (currentSlideIndex >= totalSlides) {
+                currentSlideIndex = 0;
+            } else if (currentSlideIndex < 0) {
+                currentSlideIndex = totalSlides - 1;
+            }
+            updateSlidePosition();
+            startAutoSlide();
+        }
+
+        function startAutoSlide() {
+            autoSlideTimer = setInterval(() => {
+                currentSlideIndex++;
+                if (currentSlideIndex >= totalSlides) {
+                    currentSlideIndex = 0;
+                }
+                updateSlidePosition();
+            }, 4000); 
+        }
+
+        startAutoSlide();
+
+
+        /* GLOBAL SIDEBAR FRAMEWORK ENGINE */
+        function setupCircleDots() {
+            if (isMobile()) return;
+            const radius = 105; 
+            navDots.forEach((dot, idx) => {
+                const angleRad = ((angles[idx] - 90) * Math.PI) / 180;
+                const x = Math.cos(angleRad) * radius;
+                const y = Math.sin(angleRad) * radius;
+                
+                dot.style.left = `calc(50% + ${x}px - 17px)`;
+                dot.style.top = `calc(50% + ${y}px - 17px)`;
+            });
+        }
+
+        function isMobile() {
+            return window.innerWidth <= 992;
+        }
+
+        function jumpToPage(index) {
+            activePageIndex = index;
+
+            if (isMobile()) {
+                const targetId = `p${index + 1}`;
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    const offset = 70;
+                    const bodyRect = document.body.getBoundingClientRect().top;
+                    const elementRect = targetElement.getBoundingClientRect().top;
+                    const elementPosition = elementRect - bodyRect;
+                    const offsetPosition = elementPosition - offset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+                updateMobileNav(index);
+            } else {
+                mainSliderTrack.style.transform = `translateY(-${activePageIndex * 100}vh)`;
+                updateUIElements(activePageIndex);
+            }
+        }
+
+        function updateUIElements(index) {
+            rotateCircle.style.transform = `rotate(-${angles[index]}deg)`;
+            
+            navDots.forEach((dot, idx) => {
+                dot.classList.remove('active');
+                const kanji = dot.querySelector('.kanji-num');
+                if (kanji) {
+                    kanji.style.transform = `rotate(${angles[index]}deg)`;
+                }
+            });
+            navDots[index].classList.add('active');
+
+            sections.forEach((sec, idx) => {
+                if (idx === index) sec.classList.add('active');
+                else sec.classList.remove('active');
+            });
+        }
+
+        function updateMobileNav(index) {
+            navDots.forEach((dot, idx) => {
+                if (idx === index) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+        }
+
+        window.addEventListener('wheel', (e) => {
+            if (isMobile() || isScrolling) return;
+
+            if (e.deltaY > 20) {
+                if (activePageIndex < totalPages - 1) {
+                    isScrolling = true;
+                    jumpToPage(activePageIndex + 1);
+                }
+            } else if (e.deltaY < -20) {
+                if (activePageIndex > 0) {
+                    isScrolling = true;
+                    jumpToPage(activePageIndex - 1);
+                }
+            }
+
+            setTimeout(() => { isScrolling = false; }, 1600);
+        }, { passive: true });
+
+        window.addEventListener('keydown', (e) => {
+            if (isMobile() || isScrolling) return;
+            if (e.key === 'ArrowDown' && activePageIndex < totalPages - 1) {
+                isScrolling = true;
+                jumpToPage(activePageIndex + 1);
+                setTimeout(() => isScrolling = false, 1600);
+            } else if (e.key === 'ArrowUp' && activePageIndex > 0) {
+                isScrolling = true;
+                jumpToPage(activePageIndex - 1);
+                setTimeout(() => isScrolling = false, 1600);
+            }
+        });
+
+        window.addEventListener('scroll', () => {
+            if (!isMobile()) return;
+            const scrollPos = window.scrollY + window.innerHeight / 2;
+            sections.forEach((sec, idx) => {
+                if (scrollPos >= sec.offsetTop && scrollPos < (sec.offsetTop + sec.offsetHeight)) {
+                    updateMobileNav(idx);
+                    sec.classList.add('active');
+                } else {
+                    sec.classList.remove('active');
+                }
+            });
+        });
+
+        window.addEventListener('resize', () => {
+            if (isMobile()) {
+                mainSliderTrack.style.transform = 'none';
+                window.dispatchEvent(new Event('scroll'));
+            } else {
+                setupCircleDots();
+                jumpToPage(activePageIndex);
+            }
+        });
+
+        setupCircleDots();
+        if(!isMobile()) {
+            updateUIElements(0);
+        } else {
+            setTimeout(() => window.dispatchEvent(new Event('scroll')), 100);
+        }
+    </script>
+</body>
+</html>
