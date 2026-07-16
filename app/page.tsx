@@ -8,7 +8,8 @@ export default function Home() {
   return (
     <SmoothScroll>
       <CustomCursor />
-      <main className="bg-black min-h-screen text-white overflow-hidden cursor-none">
+      {/* KOREKSI: Mengubah bg-black menjadi bg-transparent agar efek air menyelam tidak terhalang */}
+      <main className="bg-transparent min-h-screen text-white overflow-hidden cursor-none">
         <Hero />
         <Manifesto />
         <MainContent />

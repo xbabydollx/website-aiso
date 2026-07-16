@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* 🎯 Memaksa Tailwind v4 untuk membaca semua file di folder app dan components */
+@source "../app/**/*.{js,ts,jsx,tsx,mdx}";
+@source "../components/**/*.{js,ts,jsx,tsx,mdx}";
+
 @theme {
   --animate-marquee: marquee 25s linear infinite;
   --animate-portfolio-slide: portfolio-slide 20s infinite;
@@ -20,95 +24,52 @@
 }
 
 :root {
-  --background: #000000;
-  --foreground: #ffffff;
+  --background: #0D0E10;
+  --foreground: #F3F4F6;
+}
+
+/* --- 🏛️ PENGATURAN STRUKTUR UTAMA BROWSER --- */
+html, body {
+  min-height: 100vh;
+  height: auto;
 }
 
 body {
   color: var(--foreground);
-  background: var(--background);
+  background-color: #0D0E10 !important;
   font-family: Arial, Helvetica, sans-serif;
   overflow-x: hidden;
-  background-color: #060606 !important;
   position: relative;
 }
 
-/* --- 🖼️ LAYER 1: INTEGRASI GAMBAR BACKGROUND-HP DENGAN SETTINGAN MEWAH --- */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -2; /* Berada di paling dasar */
-  /* Diarahkan ke folder public/pictures/ kamu (Vercel friendly) */
-  background-image: url("/website-aiso/pictures/BACKGROUND-HP.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  opacity: 0.45; /* Di-dim sedikit agar teks putih di atasnya tetap tajam dan mudah dibaca */
-  pointer-events: none;
+/* 🌊 ANIMASI LIQUID WAVE (GERAKAN AIR PREMIUM ABU-ABU MEWAH) */
+.liquid-bg {
+  background: linear-gradient(-45deg, #3a3d42, #242629, #1C1D1F, #0D0E10);
+  background-size: 400% 400%;
+  animation: liquidMovement 10s ease infinite;
 }
 
-/* --- 🌌 LAYER 2: EFEK PENDARAN WARNA EMAS & MERAH BERDENYUT (AMBIENT ART GLOW) --- */
-body::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: -1; /* Di atas gambar, tapi di bawah teks */
-  /* Menyorot area sudut tempat goresan kuas emas & merah berada */
-  background: radial-gradient(circle at 80% 10%, rgba(197, 168, 128, 0.08) 0%, transparent 50%),
-              radial-gradient(circle at 90% 20%, rgba(139, 30, 34, 0.08) 0%, transparent 45%),
-              radial-gradient(circle at 10% 90%, rgba(139, 30, 34, 0.06) 0%, transparent 50%),
-              radial-gradient(circle at 75% 90%, rgba(197, 168, 128, 0.05) 0%, transparent 40%);
-  background-size: 150% 150%;
-  animation: orientalPulse 15s ease infinite alternate;
-  pointer-events: none;
+@keyframes liquidMovement {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
-@keyframes orientalPulse {
+/* 🤿 EFEK MENYELAM: MEMASTIKAN OPACITY DIMULAI DARI 1 WAKTU DI ATAS */
+.dive-mask {
+  opacity: 1;
+  animation: fadeToDark linear both;
+  animation-timeline: scroll(root);
+  animation-range: entry 0% exit 50%;
+}
+
+@keyframes fadeToDark {
   0% {
-    background-position: 0% 0%;
-    opacity: 0.8;
-  }
-  50% {
-    background-position: 100% 100%;
     opacity: 1;
+    filter: blur(0px);
   }
   100% {
-    background-position: 0% 100%;
-    opacity: 0.8;
+    opacity: 0;
+    filter: blur(6px);
   }
-}
-
-/* --- 🎬 EXTRA: LOOPING EFEK GRAIN NOISE SINEMATIK DI ATAS WEB --- */
-.grain-overlay {
-  position: fixed;
-  top: -10rem;
-  left: -10rem;
-  width: calc(100% + 20rem);
-  height: calc(100% + 20rem);
-  z-index: 999;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-  opacity: 0.03;
-  pointer-events: none;
-  animation: noise 1s steps(2) infinite;
-}
-
-@keyframes noise {
-  0% { transform: translate(0, 0); }
-  10% { transform: translate(-5%, -5%); }
-  20% { transform: translate(-10%, 5%); }
-  30% { transform: translate(5%, -10%); }
-  40% { transform: translate(-5%, 15%); }
-  50% { transform: translate(-10%, 5%); }
-  60% { transform: translate(15%, -5%); }
-  70% { transform: translate(0, 10%); }
-  80% { transform: translate(-15%, 15%); }
-  90% { transform: translate(10%, 5%); }
-  100% { transform: translate(5%, 0); }
 }

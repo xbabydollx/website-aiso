@@ -3,7 +3,8 @@
 export default function Manifesto() {
   return (
     <section className="min-h-screen bg-[#000000] text-white py-32 px-6 md:px-12 flex flex-col justify-center border-t border-zinc-950 relative font-sans overflow-hidden">
-      <div className="absolute top-1/4 left-0 w-full overflow-hidden whitespace-nowrap opacity-5 pointer-events-none select-none flex">
+      {/* Marquee Container dengan interaksi sentuhan aktif */}
+      <div className="absolute top-1/4 left-0 w-full overflow-hidden whitespace-nowrap opacity-5 pointer-events-none select-none flex active:[animation-play-state:paused] touch-none">
         <div className="inline-block animate-marquee text-[12vw] font-black tracking-tighter text-zinc-400 uppercase pr-4 whitespace-nowrap">
           WE BUILD PERCEPTION • WE DON'T JUST CREATE DESIGNS •&nbsp;
         </div>
